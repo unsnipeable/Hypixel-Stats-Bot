@@ -10,15 +10,14 @@ const { buildEmbed } = require("../utils/embed");
 const { buildMenu } = require("../utils/menus");
 
 const { cache, CACHE_TIME } = require("../utils/cache");
-const {embedTag} = require("../utils/tagEmbed");
 
 const linkPath = path.join(__dirname, "../data/link.json");
 
 module.exports = {
 
     data: new SlashCommandBuilder()
-        .setName("bedwars")
-        .setDescription("Show player's BedWars stats")
+        .setName("void")
+        .setDescription("Show player's BedWars Void stats")
         .addStringOption(option =>
             option
                 .setName("player")
@@ -64,7 +63,7 @@ module.exports = {
             stats = await fetchStats(username);
 
             if (!stats) {
-                return interaction.editReply({embeds: [new EmbedBuilder().setTitle("Invalid Player").setDescription(`No player by the username of ${username} was found!`).setColor(0xFF0000)]});
+                return interaction.editReply({embeds: [new EmbedBuilder().setTitle(`Invalid Player ${process.env.BARRIER_EMOJI}`).setDescription(`No player by the username of ${username} was found!`).setColor(0xFF0000)]});
             }
 
             cache.set(username, {
@@ -73,16 +72,16 @@ module.exports = {
             });
         }
 
+        fs.writeFileSync(linkPath, JSON.stringify(linkDB, null, 2));
+
         let mode = "overall";
 
-        const embed = buildEmbed(username, mode, stats, cache.get(username).time);
-        const menu = buildMenu(mode, "mode_select_statsbot:" + username);
-
-        const tag = await embedTag(username);
+        const embed = buildEmbed(username, mode, stats, cache.get(username).time, "void");
+        const menu = buildMenu(mode, "mode_select_statsbot_void:" + username);
 
         await interaction.editReply({
-            embeds: [embed, tag],
-            components: menu,
+            embeds: [embed],
+            components: menu
         });
 
     }

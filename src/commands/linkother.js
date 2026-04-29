@@ -7,12 +7,7 @@ const fs = require("fs");
 const path = require("path");
 
 const { fetchStats } = require("../api/hypixel");
-const premium = JSON.parse(
-    fs.readFileSync(
-        path.join(__dirname, "../data/premium.json"),
-        "utf8"
-    )
-);
+let premium;
 
 const linkPath = path.join(__dirname, "../data/link.json");
 
@@ -32,10 +27,16 @@ module.exports = {
                 .setName("player")
                 .setDescription("Minecraft username")
                 .setRequired(true)
-        )
-        .setDMPermission(true),
+        ),
 
     async execute(interaction) {
+        premium = JSON.parse(
+            fs.readFileSync(
+                path.join(__dirname, "../data/premium.json"),
+                "utf8"
+            )
+        );
+
         const admins = premium.admins || [];
 
         if (!admins.includes(interaction.user.id)) {

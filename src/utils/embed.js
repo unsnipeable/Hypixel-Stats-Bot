@@ -1,56 +1,69 @@
 const { EmbedBuilder } = require("discord.js");
 const { MODES } = require("./menus");
 
-
-function buildEmbed(username, modeKey, stats) {
+function buildEmbed(username, modeKey, stats, now, type = "normal") {
 
     const s = stats[modeKey];
 
-    const wlr = s.loss === 0 ? s.win : (s.win / s.loss).toFixed(2);
-    const bblr = s.bedlost === 0 ? s.bedbroken : (s.bedbroken / s.bedlost).toFixed(2);
+    const wlr = ratio(s.win, s.loss);
+    const bblr = ratio(s.bedbroken, s.bedlost);
+    const kdr = ratio(s.kills, s.deaths);
+    const fkdr = ratio(s.finalKills, s.finalDeaths);
 
-    const kdr = s.deaths === 0 ? s.kills : (s.kills / s.deaths).toFixed(2);
-    const fkdr = s.finalDeaths === 0 ? s.finalKills : (s.finalKills / s.finalDeaths).toFixed(2);
-
-    const vkdr = s.vdeaths === 0 ? s.vkills : (s.vkills / s.vdeaths).toFixed(2);
-    const vfkdr = s.vfinalDeaths === 0 ? s.vfinalKills : (s.vfinalKills / s.vfinalDeaths).toFixed(2);
-
-    return new EmbedBuilder()
+    let emb = new EmbedBuilder()
         .setColor(0x000000)
         .setThumbnail("https://skins.mcstats.com/face/" + stats.uuid)
-        .setDescription(`## \`\`[${stats.star}✫] ${stats.rank}${stats.name}\`\`'s __**${MODES[modeKey]}**__ Stats`)
-        .addFields(
+        .setDescription(`## \`\`[${stats.star}✫] ${stats.rank}${stats.name}\`\`\n> ### ${MODES[modeKey]} Mode`)
 
-            { name: "Wins", value: `${s.win}`, inline: true },
-            { name: "Losses", value: `${s.loss}`, inline: true },
-            { name: "<:win:1493524707830399026> | WLR", value: `${wlr}`, inline: true },
+    if (type !== "void") {
+        emb = emb.addFields(
+            {name: "Wins", value: `${s.win}`, inline: true},
+            {name: "Losses", value: `${s.loss}`, inline: true},
+            {name: `${process.env.WIN_EMOJI} | WLR`, value: `${wlr}`, inline: true},
 
-            { name: "Kills", value: `${s.kills}`, inline: true },
-            { name: "Deaths", value: `${s.deaths}`, inline: true },
-            { name: "<:kill:1493524702927257711> | KDR", value: `${kdr}`, inline: true },
+            {name: "Final Kills", value: `${s.finalKills}`, inline: true},
+            {name: "Final Deaths", value: `${s.finalDeaths}`, inline: true},
+            {name: `${process.env.FINAL_KILL_EMOJI} | FKDR`, value: `${fkdr}`, inline: true},
 
-            { name: "Final Kills", value: `${s.finalKills}`, inline: true },
-            { name: "Final Deaths", value: `${s.finalDeaths}`, inline: true },
-            { name: "<:final_kill:1493524704353325157> | FKDR", value: `${fkdr}`, inline: true },
+            {name: "Kills", value: `${s.kills}`, inline: true},
+            {name: "Deaths", value: `${s.deaths}`, inline: true},
+            {name: `${process.env.KILL_EMOJI} | KDR`, value: `${kdr}`, inline: true},
 
-            { name: "Bed Broken", value: `${s.bedbroken}`, inline: true },
-            { name: "Bed Lost", value: `${s.bedlost}`, inline: true },
-            { name: "<:bed:1493524705829978174> | BBLR", value: `${bblr}`, inline: true },
+            {name: "Bed Broken", value: `${s.bedbroken}`, inline: true},
+            {name: "Bed Lost", value: `${s.bedlost}`, inline: true},
+            {name: `${process.env.BED_EMOJI} | BBLR`, value: `${bblr}`, inline: true}
+        );
+    } else if (type === "void") {
+        const vkdr = ratio(s.vkills, s.vdeaths);
+        const vfkdr = ratio(s.vfinalKills, s.vfinalDeaths);
 
-            { name: "<:void:1493524701480353854> Void Stats <:void:1493524701480353854>", value: `\u200B`, inline: false },
-
+        emb = emb.addFields(
             { name: "Void Kills", value: `${s.vkills}`, inline: true },
             { name: "Void Deaths", value: `${s.vdeaths}`, inline: true },
-            { name: "<:kill:1493524702927257711> | Void KDR <:void:1493524701480353854>", value: `${vkdr}`, inline: true },
+            { name: `${process.env.KILL_EMOJI} | Void KDR ${process.env.VOID_EMOJI}`, value: `${vkdr}`, inline: true },
 
             { name: "Void Final Kills", value: `${s.vfinalKills}`, inline: true },
             { name: "Void Final Deaths", value: `${s.vfinalDeaths}`, inline: true },
-            { name: "<:final_kill:1493524704353325157> | Void FKDR <:void:1493524701480353854>", value: `${vfkdr}`, inline: true }
+            { name: `${process.env.FINAL_KILL_EMOJI} | Void FKDR ${process.env.VOID_EMOJI}`, value: `${vfkdr}`, inline: true },
+        )
+    }
+
+    emb = emb
+        .addFields(
+            { name: `${process.env.CLOCK_EMOJI} Last Fetch: <t:${Math.floor( now/ 1000)}:R>`, value: `\u200B`, inline: false },
         )
         .setFooter({
             text:"made by mtnk | @unsnipeable"
-        })
-        .setTimestamp();
+        });
+
+    return emb;
+}
+
+
+function ratio(a, b) {
+    a = a ?? 0;
+    b = b ?? 0;
+    return b === 0 ? a : (a / b).toFixed(2);
 }
 
 module.exports = {

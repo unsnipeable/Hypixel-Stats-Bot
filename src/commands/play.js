@@ -32,7 +32,9 @@ module.exports = {
 
         let description;
 
-        if (modes.includes(mode)) {
+        if (mode === "four_four_totallynormal") {
+            description = `Commands for this mode no longer work.`;
+        } else if (modes.includes(mode)) {
             description =
                 `## ${MODES[mode]} Mode commands\n`+
                 `\`\`\`/play bedwars_eight_two_${mode}\`\`\`\n` +
@@ -51,7 +53,7 @@ module.exports = {
 
         await interaction.editReply({
             embeds: [embed],
-            components: [menu]
+            components: menu
         });
     }
 
