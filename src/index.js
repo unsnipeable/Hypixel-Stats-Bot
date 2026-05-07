@@ -1,8 +1,14 @@
 require("dotenv").config();
 
-const { Client, GatewayIntentBits, ActivityType} = require("discord.js");
 const fs = require("fs");
 const path = require("path");
+
+
+const commandFiles = fs
+    .readdirSync(path.join(__dirname, "commands"))
+    .filter(file => file.endsWith(".js"));
+
+const { Client, GatewayIntentBits, ActivityType} = require("discord.js");
 
 const client = new Client({
     intents: [
@@ -12,10 +18,6 @@ const client = new Client({
 });
 
 client.commands = new Map();
-
-const commandFiles = fs
-    .readdirSync(path.join(__dirname, "commands"))
-    .filter(file => file.endsWith(".js"));
 
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
@@ -31,7 +33,7 @@ for (const file of eventFiles) {
     event(client);
 }
 
-client.once("ready", () => {
+client.once("ready", async () => {
     console.log(`Logged in as ${client.user.tag}`);
 
     let t;

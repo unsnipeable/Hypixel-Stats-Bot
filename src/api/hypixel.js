@@ -76,7 +76,8 @@ async function fetchStats(username) {
         name,
         star,
         rank,
-        discordId
+        discordId,
+        uuid
     };
 
     stats.overall = {

@@ -64,7 +64,7 @@ module.exports = {
             stats = await fetchStats(username);
 
             if (!stats) {
-                return interaction.editReply({embeds: [new EmbedBuilder().setTitle("Invalid Player").setDescription(`No player by the username of ${username} was found!`).setColor(0xFF0000)]});
+                return interaction.editReply({embeds: [new EmbedBuilder().setTitle("Invalid Player").setDescription(`No player by the username of \`\`${username}\`\` was found!`).setColor(0xFF0000)]});
             }
 
             cache.set(username, {

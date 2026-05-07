@@ -12,7 +12,6 @@ function buildEmbed(username, modeKey, stats, now, type = "normal") {
 
     let emb = new EmbedBuilder()
         .setColor(0x000000)
-        .setThumbnail("https://skins.mcstats.com/face/" + stats.uuid)
         .setDescription(`## \`\`[${stats.star}✫] ${stats.rank}${stats.name}\`\`\n> ### ${MODES[modeKey]} Mode`)
 
     if (type !== "void") {
@@ -54,7 +53,8 @@ function buildEmbed(username, modeKey, stats, now, type = "normal") {
         )
         .setFooter({
             text:"made by mtnk | @unsnipeable"
-        });
+        })
+        .setThumbnail("https://skins.mcstats.com/bust/" + stats.uuid);
 
     return emb;
 }
